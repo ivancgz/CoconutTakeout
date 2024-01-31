@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
@@ -33,7 +32,6 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     /**
      * 注册自定义拦截器
-     *
      * @param registry
      */
     protected void addInterceptors(InterceptorRegistry registry) {
@@ -48,20 +46,37 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      * @return Docket object
      */
     @Bean
-    public Docket docket() {
+    public Docket docket1() {
         log.info("准备生成接口文档……");
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .title("椰琼外卖项目接口文档")
                 .version("1.0")
                 .description("椰琼外卖项目接口文档")
                 .build();
-        Docket docket = new Docket(DocumentationType.SWAGGER_2)
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("管理端接口")
                 .apiInfo(apiInfo)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.sky.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.sky.controller.admin"))
                 .paths(PathSelectors.any())
                 .build();
-        return docket;
+    }
+
+    @Bean
+    public Docket docket2() {
+        log.info("准备生成接口文档……");
+        ApiInfo apiInfo = new ApiInfoBuilder()
+                .title("椰琼外卖项目接口文档")
+                .version("1.0")
+                .description("椰琼外卖项目接口文档")
+                .build();
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("用户端接口")
+                .apiInfo(apiInfo)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.sky.controller.user"))
+                .paths(PathSelectors.any())
+                .build();
     }
 
     /**
