@@ -23,7 +23,7 @@ import javax.annotation.Resource;
 import javax.websocket.server.PathParam;
 import java.util.List;
 
-@RestController
+@RestController("adminSetMealController")
 @RequestMapping("/admin/setmeal")
 @Api(tags = "套餐相关接口")
 @Slf4j

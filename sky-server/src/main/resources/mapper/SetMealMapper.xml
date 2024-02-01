@@ -52,4 +52,8 @@
         </foreach>
     </delete>
 
+    <select id="getDishItemById" resultType="com.sky.vo.DishItemVO">
+        select s.copies, s.name, d.image, d.description from setmeal_dish s left outer join dish d on s.dish_id = d.id;
+    </select>
+
 </mapper>
