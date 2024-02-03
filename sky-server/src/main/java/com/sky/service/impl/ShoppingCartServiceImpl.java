@@ -77,10 +77,21 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
      */
     @Override
     public List<ShoppingCart> showShoppingCart() {
+        // 获取当前用户的userId
         ShoppingCart shoppingCart = ShoppingCart.builder()
                                                 .userId(BaseContext.getCurrentId())
                                                 .build();
         List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
         return list;
+    }
+
+    /**
+     * 清空购物车
+     */
+    @Override
+    public void cleanShoppingCart() {
+        // 获取当前用户的userId
+        Long userId = BaseContext.getCurrentId();
+        shoppingCartMapper.deleteByUserId(userId);
     }
 }
