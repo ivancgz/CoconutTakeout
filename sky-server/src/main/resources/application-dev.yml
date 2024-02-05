@@ -19,10 +19,14 @@ sky:
   wechat:
     appid: wxe896f9e7cd8a8445
     secret: 73f51a500a42fa2f06532002fce6946f
-    mchid:
-    mch-serial-no:
+    mchid: 1561414331
+    mch-serial-no: 4B3B3DC35414AD50B1B755BAF8DE9CC7CF407606
     private-key-file-path:
     api-v3-key:
     we-chat-pay-cert-file-path:
     notify-url: https://7907d7f0.r7.vip.cpolar.cn/notify/paySuccess
     refund-notify-url: https://7907d7f0.r7.vip.cpolar.cn/notify/refundSuccess
+  shop:
+    address: 海口市龙华区金龙路2号
+  baidu:
+    ak: wCKAm6QUA1PzgaeY1w0YOSjXws6C9AAD
