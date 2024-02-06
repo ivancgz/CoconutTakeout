@@ -107,7 +107,7 @@ public interface OrderService {
     void complete(Long id);
 
     /**
-     * 催单
+     * 客户催单
      * @param id
      */
     void reminder(Long id);

@@ -38,6 +38,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import com.wechat.pay.contrib.apache.httpclient.util.PemUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.RandomStringUtils;
@@ -79,6 +80,8 @@ public class OrderServiceImpl implements OrderService {
     private WeChatPayUtil weChatPayUtil;
     @Autowired
     private WeChatProperties weChatProperties;
+    @Resource
+    private WebSocketServer webSocketServer;
 
     @Value("${sky.shop.address}")
     private String shopAddress;
@@ -201,9 +204,11 @@ public class OrderServiceImpl implements OrderService {
      * @param outTradeNo
      */
     public void paySuccess(String outTradeNo) {
+        // 当前登陆用户id
+        Long userId = BaseContext.getCurrentId();
 
         // 根据订单号查询订单
-        Orders ordersDB = orderMapper.getByNumber(outTradeNo);
+        Orders ordersDB = orderMapper.getByNumber(outTradeNo, userId);
 
         // 根据订单id更新订单的状态、支付方式、支付状态、结账时间
         Orders orders = Orders.builder()
@@ -214,6 +219,16 @@ public class OrderServiceImpl implements OrderService {
                               .build();
 
         orderMapper.update(orders);
+
+        // 通过 websocket 向客户端推送消息
+        Map map = new HashMap<>();
+        map.put("type", 1); // 1：表示来单提醒  2:表示客户催单
+        map.put("orderId", ordersDB.getId());
+        map.put("content", "订单号：" + outTradeNo);
+
+        // 通过 WebSocket 向浏览器客户端推送消息
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
     }
 
     /**
@@ -482,7 +497,10 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public void complete(Long id) {
+        // 根据id查询订单
         Orders ordersDB = orderMapper.getById(id);
+
+        // 检验订单是否存在，并且状态为4
         if (ordersDB == null && !ordersDB.getStatus().equals(Orders.DELIVERY_IN_PROGRESS)) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
@@ -496,12 +514,27 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 催单
+     * 客户催单
      * @param id
      */
     @Override
     public void reminder(Long id) {
+        // 根据id查询订单
+        Orders ordersDB = orderMapper.getById(id);
 
+        // 检验订单是否存在，并且状态为4
+        if (ordersDB == null && !ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Map map = new HashMap<>();
+        map.put("type", 2); // 1：表示来单提醒  2：表示客户催单
+        map.put("orderId", ordersDB.getId());
+        map.put("content", "订单号：" + ordersDB.getNumber());
+
+        // 通过 WebSocket 向浏览器客户端推送消息
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
     }
 
     private List<OrderVO> getOrderVOList(Page<Orders> page) {
