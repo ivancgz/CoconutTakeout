@@ -77,7 +77,7 @@ public interface OrderService {
 
     /**
      * 各个状态的订单数量统计
-     * @return
+     * @return OrderStatisticsVO
      */
     OrderStatisticsVO statistics();
 

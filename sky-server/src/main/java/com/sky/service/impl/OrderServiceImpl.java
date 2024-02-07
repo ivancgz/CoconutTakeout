@@ -421,7 +421,7 @@ public class OrderServiceImpl implements OrderService {
         orderStatisticsVO.setConfirmed(confirmed);   // 待派送数量
         orderStatisticsVO.setToBeConfirmed(toBeConfirmed);   // 待接单数量
         orderStatisticsVO.setDeliveryInProgress(deliveryInProgress);  // 派送中数量
-        return null;
+        return orderStatisticsVO;
     }
 
     /**
