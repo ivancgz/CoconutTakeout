@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.sky.constant.StatusConstant;
 import com.sky.entity.Orders;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.OrderMapper;
@@ -39,9 +40,9 @@ public class WorkspaceServiceImpl implements WorkspaceService {
      * @return BusinessDataVO
      */
     @Override
-    public BusinessDataVO getBusinessData() {
+    public BusinessDataVO getBusinessData(LocalDateTime begin, LocalDateTime end) {
         // 参数配置map
-        Map map = setParam();
+        Map map = setParam(begin, end);
         
         // 今日新增用户数
         Integer newUsers = userMapper.getByDate(map);
@@ -83,9 +84,9 @@ public class WorkspaceServiceImpl implements WorkspaceService {
      * @return OrderOverViewVO
      */
     @Override
-    public OrderOverViewVO getOverviewOrders() {
+    public OrderOverViewVO getOverviewOrders(LocalDateTime begin, LocalDateTime end) {
         // 参数配置map
-        Map map = setParam();
+        Map map = setParam(begin, end);
 
         //全部订单
         Integer allOrders = orderMapper.countByMap(map);
@@ -122,10 +123,10 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     @Override
     public DishOverViewVO getOverviewDishes() {
         // 起售菜品
-        Integer sold = dishMapper.countByStatus(1);
+        Integer sold = dishMapper.countByStatus(StatusConstant.ENABLE);
 
         // 停售菜品
-        Integer discontinued = dishMapper.countByStatus(0);
+        Integer discontinued = dishMapper.countByStatus(StatusConstant.DISABLE);
 
         return DishOverViewVO.builder()
                              .sold(sold)
@@ -139,11 +140,11 @@ public class WorkspaceServiceImpl implements WorkspaceService {
      */
     @Override
     public SetmealOverViewVO getOverviewSetmeals() {
-        // 起售菜品
-        Integer sold = setmealMapper.countByStatus(1);
+        // 起售套餐
+        Integer sold = setmealMapper.countByStatus(StatusConstant.ENABLE);
 
-        // 停售菜品
-        Integer discontinued = setmealMapper.countByStatus(0);
+        // 停售套餐
+        Integer discontinued = setmealMapper.countByStatus(StatusConstant.DISABLE);
 
         return SetmealOverViewVO.builder()
                                 .sold(sold)
@@ -155,10 +156,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
      * 设置参数map
      * @return Map
      */
-    private Map setParam() {
-        // 今日时间区间
-        LocalDateTime begin = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
-        LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+    private Map setParam(LocalDateTime begin, LocalDateTime end) {
         Map map = new HashMap<>();
         map.put("begin", begin);
         map.put("end", end);
